@@ -4,23 +4,29 @@
 import PackageDescription
 
 let package = Package(
-    name: "SwiftACP",
-    products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
-        .library(
-            name: "SwiftACP",
-            targets: ["SwiftACP"]
-        ),
-    ],
-    targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
-        .target(
-            name: "SwiftACP"
-        ),
-        .testTarget(
-            name: "SwiftACPTests",
-            dependencies: ["SwiftACP"]
-        ),
-    ]
+  name: "SwiftACP",
+  products: [
+    // Products define the executables and libraries a package produces, making them visible to other packages.
+    .library(
+      name: "SwiftACP",
+      targets: ["SwiftACP"]
+    )
+  ],
+  dependencies: [
+    .package(url: "https://github.com/luosheng/StreamTransport.git", branch: "main")
+  ],
+  targets: [
+    // Targets are the basic building blocks of a package, defining a module or a test suite.
+    // Targets can depend on other targets in this package and products from dependencies.
+    .target(
+      name: "SwiftACP",
+      dependencies: [
+        .product(name: "StreamTransport", package: "StreamTransport")
+      ]
+    ),
+    .testTarget(
+      name: "SwiftACPTests",
+      dependencies: ["SwiftACP"]
+    ),
+  ]
 )
