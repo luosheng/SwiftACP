@@ -77,6 +77,13 @@ public actor ACPClient {
     }
   }
 
+  /// Sets the delegate for handling agent-initiated requests and notifications.
+  ///
+  /// - Parameter delegate: The delegate to handle agent requests.
+  public func setDelegate(_ delegate: ACPClientDelegate?) {
+    self.delegate = delegate
+  }
+
   /// Disconnects from the agent by stopping the transport.
   public func disconnect() async throws {
     guard isConnected else { return }
@@ -89,7 +96,7 @@ public actor ACPClient {
 
     // Cancel all pending requests
     for (_, pending) in pendingRequests {
-      pending.continuation.resume(throwing: ACPClientError.transportClosed)
+      pending.resumeThrowing(ACPClientError.transportClosed)
     }
     pendingRequests.removeAll()
   }
@@ -190,23 +197,27 @@ public actor ACPClient {
     var framedData = data
     framedData.append(contentsOf: [0x0A])  // newline
 
-    // Create continuation for async response
+    // Send the data first
+    do {
+      try await transport.send(framedData)
+    } catch {
+      throw ACPClientError.connectionFailed(error.localizedDescription)
+    }
+
+    // Then wait for the response
     return try await withCheckedThrowingContinuation { continuation in
       let pending = PendingRequest(
-        continuation: continuation as! CheckedContinuation<Any, Error>,
-        responseType: Response.self
+        resumeReturning: { continuation.resume(returning: $0 as! Response) },
+        resumeThrowing: { continuation.resume(throwing: $0) },
+        decode: { data, decoder in try decoder.decode(Response.self, from: data) }
       )
       pendingRequests[id] = pending
-
-      Task {
-        do {
-          try await transport.send(framedData)
-        } catch {
-          pendingRequests.removeValue(forKey: id)
-          continuation.resume(throwing: ACPClientError.connectionFailed(error.localizedDescription))
-        }
-      }
     }
+  }
+
+  /// Removes a pending request by ID (helper for async context).
+  private func removePendingRequest(_ id: RequestId) {
+    pendingRequests.removeValue(forKey: id)
   }
 
   /// Sends a JSON-RPC notification (no response expected).
@@ -331,24 +342,27 @@ public actor ACPClient {
       guard let pending = pendingRequests.removeValue(forKey: id) else { return }
 
       do {
-        // Re-decode with the expected response type
-        struct ResponseEnvelope<T: Codable>: Codable {
+        // Decode the entire response with AnyCodable result
+        struct ResponseEnvelope: Decodable {
           let jsonrpc: String
           let id: RequestId
-          let result: T
+          let result: AnyCodable
         }
 
-        // Use the stored response type to decode
-        let result = try pending.decodeResult(from: data, decoder: decoder)
-        pending.continuation.resume(returning: result)
+        let envelope = try decoder.decode(ResponseEnvelope.self, from: data)
+
+        // Re-encode and decode to the expected type via pending.decode
+        let resultData = try encoder.encode(envelope.result)
+        let decoded = try pending.decode(resultData, decoder)
+
+        pending.resumeReturning(decoded)
       } catch {
-        pending.continuation.resume(
-          throwing: ACPClientError.decodingFailed(error.localizedDescription))
+        pending.resumeThrowing(ACPClientError.decodingFailed(error.localizedDescription))
       }
 
     case .error(let id, let error):
       guard let pending = pendingRequests.removeValue(forKey: id) else { return }
-      pending.continuation.resume(throwing: ACPClientError.rpcError(error))
+      pending.resumeThrowing(ACPClientError.rpcError(error))
     }
   }
 
@@ -483,7 +497,7 @@ public actor ACPClient {
     isConnected = false
 
     for pending in pendingRequests.values {
-      pending.continuation.resume(throwing: ACPClientError.transportClosed)
+      pending.resumeThrowing(ACPClientError.transportClosed)
     }
     pendingRequests.removeAll()
   }
@@ -493,14 +507,9 @@ public actor ACPClient {
 
 /// A pending request awaiting a response.
 private struct PendingRequest {
-  let continuation: CheckedContinuation<Any, Error>
-  let responseType: Any.Type
-
-  func decodeResult(from data: Data, decoder: JSONDecoder) throws -> Any {
-    // This is a type-erased decode that relies on dynamic dispatch
-    // The actual implementation would need to use a type registry or generic wrapper
-    throw ACPClientError.unexpectedResponse
-  }
+  let resumeReturning: (Any) -> Void
+  let resumeThrowing: (Error) -> Void
+  let decode: (Data, JSONDecoder) throws -> Any
 }
 
 /// An incoming response from the agent.

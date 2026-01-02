@@ -16,20 +16,20 @@ public struct AgentCapabilities: Codable, Sendable {
   public var loadSession: Bool
 
   /// MCP capabilities supported by the agent.
-  public var mcpCapabilities: McpCapabilities
+  public var mcpCapabilities: McpCapabilities?
 
   /// Prompt capabilities supported by the agent.
-  public var promptCapabilities: PromptCapabilities
+  public var promptCapabilities: PromptCapabilities?
 
   /// Session capabilities.
-  public var sessionCapabilities: SessionCapabilities
+  public var sessionCapabilities: SessionCapabilities?
 
   public init(
     _meta: Meta = nil,
     loadSession: Bool = false,
-    mcpCapabilities: McpCapabilities = McpCapabilities(),
-    promptCapabilities: PromptCapabilities = PromptCapabilities(),
-    sessionCapabilities: SessionCapabilities = SessionCapabilities()
+    mcpCapabilities: McpCapabilities? = nil,
+    promptCapabilities: PromptCapabilities? = nil,
+    sessionCapabilities: SessionCapabilities? = nil
   ) {
     self._meta = _meta
     self.loadSession = loadSession

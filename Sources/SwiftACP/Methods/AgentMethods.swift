@@ -42,10 +42,10 @@ public struct InitializeResponse: Codable, Sendable {
   public var agentCapabilities: AgentCapabilities
 
   /// Information about the agent implementation.
-  public var agentInfo: Implementation
+  public var agentInfo: Implementation?
 
   /// Available authentication methods.
-  public var authMethods: [AuthMethod]
+  public var authMethods: [AuthMethod]?
 
   /// The negotiated protocol version.
   public var protocolVersion: ProtocolVersion
@@ -53,8 +53,8 @@ public struct InitializeResponse: Codable, Sendable {
   public init(
     _meta: Meta = nil,
     agentCapabilities: AgentCapabilities = AgentCapabilities(),
-    agentInfo: Implementation,
-    authMethods: [AuthMethod] = [],
+    agentInfo: Implementation? = nil,
+    authMethods: [AuthMethod]? = nil,
     protocolVersion: ProtocolVersion
   ) {
     self._meta = _meta
