@@ -102,14 +102,14 @@ public struct RequestPermissionRequest: Codable, Sendable {
   /// The ID of the session.
   public var sessionId: SessionId
 
-  /// The tool call to request permission for.
-  public var toolCall: ToolCall
+  /// The tool call update to request permission for.
+  public var toolCall: ToolCallUpdate
 
   public init(
     _meta: Meta = nil,
     options: [PermissionOption],
     sessionId: SessionId,
-    toolCall: ToolCall
+    toolCall: ToolCallUpdate
   ) {
     self._meta = _meta
     self.options = options

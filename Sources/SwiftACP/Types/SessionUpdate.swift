@@ -83,7 +83,7 @@ public enum SessionUpdate: Codable, Sendable {
 
 /// A chunk of user message content.
 public struct UserMessageChunk: Codable, Sendable {
-  private let sessionUpdate: String = "user_message_chunk"
+  private var sessionUpdate: String = "user_message_chunk"
 
   /// Extensible metadata field.
   public var _meta: Meta
@@ -101,7 +101,7 @@ public struct UserMessageChunk: Codable, Sendable {
 
 /// A chunk of agent message content.
 public struct AgentMessageChunk: Codable, Sendable {
-  private let sessionUpdate: String = "agent_message_chunk"
+  private var sessionUpdate: String = "agent_message_chunk"
 
   /// Extensible metadata field.
   public var _meta: Meta
@@ -119,7 +119,7 @@ public struct AgentMessageChunk: Codable, Sendable {
 
 /// A chunk of agent thinking/reasoning content.
 public struct AgentThoughtChunk: Codable, Sendable {
-  private let sessionUpdate: String = "agent_thought_chunk"
+  private var sessionUpdate: String = "agent_thought_chunk"
 
   /// Extensible metadata field.
   public var _meta: Meta
@@ -137,7 +137,7 @@ public struct AgentThoughtChunk: Codable, Sendable {
 
 /// A new tool call update.
 public struct ToolCallSessionUpdate: Codable, Sendable {
-  private let sessionUpdate: String = "tool_call"
+  private var sessionUpdate: String = "tool_call"
 
   /// Extensible metadata field.
   public var _meta: Meta
@@ -151,11 +151,11 @@ public struct ToolCallSessionUpdate: Codable, Sendable {
   /// Locations in files affected by this tool call.
   public var locations: [ToolCallLocation]?
 
-  /// The raw input to the tool.
-  public var rawInput: String?
+  /// The raw input to the tool (arbitrary JSON).
+  public var rawInput: AnyCodable?
 
-  /// The raw output from the tool.
-  public var rawOutput: String?
+  /// The raw output from the tool (arbitrary JSON).
+  public var rawOutput: AnyCodable?
 
   /// The current status of the tool call.
   public var status: ToolCallStatus
@@ -171,8 +171,8 @@ public struct ToolCallSessionUpdate: Codable, Sendable {
     content: [ToolCallContent]? = nil,
     kind: ToolKind? = nil,
     locations: [ToolCallLocation]? = nil,
-    rawInput: String? = nil,
-    rawOutput: String? = nil,
+    rawInput: AnyCodable? = nil,
+    rawOutput: AnyCodable? = nil,
     status: ToolCallStatus,
     title: String? = nil,
     toolCallId: ToolCallId
@@ -193,7 +193,7 @@ public struct ToolCallSessionUpdate: Codable, Sendable {
 
 /// An update to an existing tool call.
 public struct ToolCallUpdateSessionUpdate: Codable, Sendable {
-  private let sessionUpdate: String = "tool_call_update"
+  private var sessionUpdate: String = "tool_call_update"
 
   /// Extensible metadata field.
   public var _meta: Meta
@@ -207,11 +207,11 @@ public struct ToolCallUpdateSessionUpdate: Codable, Sendable {
   /// Updated locations.
   public var locations: [ToolCallLocation]?
 
-  /// Updated raw input.
-  public var rawInput: String?
+  /// Updated raw input (arbitrary JSON).
+  public var rawInput: AnyCodable?
 
-  /// Updated raw output.
-  public var rawOutput: String?
+  /// Updated raw output (arbitrary JSON).
+  public var rawOutput: AnyCodable?
 
   /// Updated status.
   public var status: ToolCallStatus?
@@ -227,8 +227,8 @@ public struct ToolCallUpdateSessionUpdate: Codable, Sendable {
     content: [ToolCallContent]? = nil,
     kind: ToolKind? = nil,
     locations: [ToolCallLocation]? = nil,
-    rawInput: String? = nil,
-    rawOutput: String? = nil,
+    rawInput: AnyCodable? = nil,
+    rawOutput: AnyCodable? = nil,
     status: ToolCallStatus? = nil,
     title: String? = nil,
     toolCallId: ToolCallId
@@ -249,7 +249,7 @@ public struct ToolCallUpdateSessionUpdate: Codable, Sendable {
 
 /// A plan update.
 public struct PlanSessionUpdate: Codable, Sendable {
-  private let sessionUpdate: String = "plan"
+  private var sessionUpdate: String = "plan"
 
   /// Extensible metadata field.
   public var _meta: Meta
@@ -267,7 +267,7 @@ public struct PlanSessionUpdate: Codable, Sendable {
 
 /// An update to the available commands.
 public struct AvailableCommandsUpdateSessionUpdate: Codable, Sendable {
-  private let sessionUpdate: String = "available_commands_update"
+  private var sessionUpdate: String = "available_commands_update"
 
   /// Extensible metadata field.
   public var _meta: Meta
@@ -285,7 +285,7 @@ public struct AvailableCommandsUpdateSessionUpdate: Codable, Sendable {
 
 /// An update to the current session mode.
 public struct CurrentModeUpdateSessionUpdate: Codable, Sendable {
-  private let sessionUpdate: String = "current_mode_update"
+  private var sessionUpdate: String = "current_mode_update"
 
   /// Extensible metadata field.
   public var _meta: Meta

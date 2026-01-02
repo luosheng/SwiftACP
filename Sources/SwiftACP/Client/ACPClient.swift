@@ -197,6 +197,11 @@ public actor ACPClient {
     var framedData = data
     framedData.append(contentsOf: [0x0A])  // newline
 
+    // DEBUG: Print the request JSON
+    if let jsonString = String(data: data, encoding: .utf8) {
+      fputs("[DEBUG] Sending request: \(jsonString)\n", stderr)
+    }
+
     // Send the data first
     do {
       try await transport.send(framedData)
@@ -456,22 +461,22 @@ public actor ACPClient {
 
   /// Sends a success response to the agent.
   private func sendSuccessResponse(id: RequestId, result: Any) async {
-    guard result is (any Codable) else { return }
+    guard let encodableResult = result as? any Encodable else { return }
 
     struct ResponseEnvelope: Encodable {
       let jsonrpc: String
       let id: RequestId
-      let result: AnyCodable
+      let result: AnyEncodable
 
-      init(id: RequestId, result: Any) {
+      init(id: RequestId, result: any Encodable) {
         self.jsonrpc = jsonRPCVersion
         self.id = id
-        self.result = AnyCodable(result)
+        self.result = AnyEncodable(result)
       }
     }
 
     do {
-      var data = try encoder.encode(ResponseEnvelope(id: id, result: result))
+      var data = try encoder.encode(ResponseEnvelope(id: id, result: encodableResult))
       data.append(contentsOf: [0x0A])
       try await transport.send(data)
     } catch {

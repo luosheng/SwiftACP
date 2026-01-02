@@ -237,6 +237,21 @@ public struct AnyCodable: Codable, @unchecked Sendable {
   }
 }
 
+// MARK: - AnyEncodable
+
+/// A type-erased Encodable wrapper for encoding response payloads.
+public struct AnyEncodable: Encodable {
+  private let encodeClosure: (Encoder) throws -> Void
+
+  public init<T: Encodable>(_ value: T) {
+    self.encodeClosure = value.encode(to:)
+  }
+
+  public func encode(to encoder: Encoder) throws {
+    try encodeClosure(encoder)
+  }
+}
+
 // MARK: - Meta
 
 /// Type alias for the extensible _meta field used throughout ACP.

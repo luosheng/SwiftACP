@@ -23,11 +23,11 @@ public struct ToolCall: Codable, Sendable {
   /// Locations in files affected by this tool call.
   public var locations: [ToolCallLocation]?
 
-  /// The raw input to the tool.
-  public var rawInput: String?
+  /// The raw input to the tool (arbitrary JSON).
+  public var rawInput: AnyCodable?
 
-  /// The raw output from the tool.
-  public var rawOutput: String?
+  /// The raw output from the tool (arbitrary JSON).
+  public var rawOutput: AnyCodable?
 
   /// The current status of the tool call.
   public var status: ToolCallStatus
@@ -43,8 +43,8 @@ public struct ToolCall: Codable, Sendable {
     content: [ToolCallContent]? = nil,
     kind: ToolKind? = nil,
     locations: [ToolCallLocation]? = nil,
-    rawInput: String? = nil,
-    rawOutput: String? = nil,
+    rawInput: AnyCodable? = nil,
+    rawOutput: AnyCodable? = nil,
     status: ToolCallStatus,
     title: String? = nil,
     toolCallId: ToolCallId
@@ -77,11 +77,11 @@ public struct ToolCallUpdate: Codable, Sendable {
   /// Updated locations.
   public var locations: [ToolCallLocation]?
 
-  /// Updated raw input.
-  public var rawInput: String?
+  /// Updated raw input (arbitrary JSON).
+  public var rawInput: AnyCodable?
 
-  /// Updated raw output.
-  public var rawOutput: String?
+  /// Updated raw output (arbitrary JSON).
+  public var rawOutput: AnyCodable?
 
   /// Updated status.
   public var status: ToolCallStatus?
@@ -97,8 +97,8 @@ public struct ToolCallUpdate: Codable, Sendable {
     content: [ToolCallContent]? = nil,
     kind: ToolKind? = nil,
     locations: [ToolCallLocation]? = nil,
-    rawInput: String? = nil,
-    rawOutput: String? = nil,
+    rawInput: AnyCodable? = nil,
+    rawOutput: AnyCodable? = nil,
     status: ToolCallStatus? = nil,
     title: String? = nil,
     toolCallId: ToolCallId
@@ -215,7 +215,7 @@ public enum ToolCallContent: Codable, Sendable {
 
 /// A content block wrapper for tool call content.
 public struct ToolCallContentBlock: Codable, Sendable {
-  private let type: String = "content"
+  private var type: String = "content"
 
   /// Extensible metadata field.
   public var _meta: Meta
@@ -233,7 +233,7 @@ public struct ToolCallContentBlock: Codable, Sendable {
 
 /// Represents a file diff (before and after).
 public struct Diff: Codable, Sendable {
-  private let type: String = "diff"
+  private var type: String = "diff"
 
   /// Extensible metadata field.
   public var _meta: Meta

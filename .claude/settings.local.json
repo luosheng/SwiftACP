@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(swift build:*)",
+      "Bash(swift run:*)",
+      "Bash(/Users/luosheng/Projects/fork/typescript-sdk/src/examples/agent)",
+      "Bash(/Users/luosheng/Projects/Personal/SwiftACP/.build/arm64-apple-macosx/debug/ACPClientExample)",
+      "Bash(./.build/arm64-apple-macosx/debug/ACPClientExample)",
+      "Bash(1)",
+      "Bash(ls:*)",
+      "Bash(cat:*)"
+    ]
+  }
+}

@@ -50,7 +50,7 @@ public enum McpServer: Codable, Sendable {
 
 /// HTTP-based MCP server configuration.
 public struct McpServerHttp: Codable, Sendable {
-  private let type: String = "http"
+  private var type: String = "http"
 
   /// Extensible metadata field.
   public var _meta: Meta
@@ -81,7 +81,7 @@ public struct McpServerHttp: Codable, Sendable {
 
 /// Server-Sent Events based MCP server configuration.
 public struct McpServerSse: Codable, Sendable {
-  private let type: String = "sse"
+  private var type: String = "sse"
 
   /// Extensible metadata field.
   public var _meta: Meta
@@ -112,7 +112,7 @@ public struct McpServerSse: Codable, Sendable {
 
 /// Standard I/O based MCP server configuration.
 public struct McpServerStdio: Codable, Sendable {
-  private let type: String = "stdio"
+  private var type: String = "stdio"
 
   /// Extensible metadata field.
   public var _meta: Meta

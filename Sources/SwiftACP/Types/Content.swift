@@ -65,8 +65,6 @@ public enum ContentBlock: Codable, Sendable {
 
 /// Text content block.
 public struct TextContent: Codable, Sendable {
-  private let type: String = "text"
-
   /// Extensible metadata field.
   public var _meta: Meta
 
@@ -85,14 +83,31 @@ public struct TextContent: Codable, Sendable {
     self.annotations = annotations
     self.text = text
   }
+
+  private enum CodingKeys: String, CodingKey {
+    case type, _meta, annotations, text
+  }
+
+  public init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    self._meta = try container.decodeIfPresent([String: AnyCodable].self, forKey: ._meta)
+    self.annotations = try container.decodeIfPresent(Annotations.self, forKey: .annotations)
+    self.text = try container.decode(String.self, forKey: .text)
+  }
+
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.container(keyedBy: CodingKeys.self)
+    try container.encode("text", forKey: .type)
+    try container.encodeIfPresent(_meta, forKey: ._meta)
+    try container.encodeIfPresent(annotations, forKey: .annotations)
+    try container.encode(text, forKey: .text)
+  }
 }
 
 // MARK: - Image Content
 
 /// Image content block.
 public struct ImageContent: Codable, Sendable {
-  private let type: String = "image"
-
   /// Extensible metadata field.
   public var _meta: Meta
 
@@ -121,14 +136,35 @@ public struct ImageContent: Codable, Sendable {
     self.mimeType = mimeType
     self.uri = uri
   }
+
+  private enum CodingKeys: String, CodingKey {
+    case type, _meta, annotations, data, mimeType, uri
+  }
+
+  public init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    self._meta = try container.decodeIfPresent([String: AnyCodable].self, forKey: ._meta)
+    self.annotations = try container.decodeIfPresent(Annotations.self, forKey: .annotations)
+    self.data = try container.decodeIfPresent(String.self, forKey: .data)
+    self.mimeType = try container.decode(String.self, forKey: .mimeType)
+    self.uri = try container.decodeIfPresent(String.self, forKey: .uri)
+  }
+
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.container(keyedBy: CodingKeys.self)
+    try container.encode("image", forKey: .type)
+    try container.encodeIfPresent(_meta, forKey: ._meta)
+    try container.encodeIfPresent(annotations, forKey: .annotations)
+    try container.encodeIfPresent(data, forKey: .data)
+    try container.encode(mimeType, forKey: .mimeType)
+    try container.encodeIfPresent(uri, forKey: .uri)
+  }
 }
 
 // MARK: - Audio Content
 
 /// Audio content block.
 public struct AudioContent: Codable, Sendable {
-  private let type: String = "audio"
-
   /// Extensible metadata field.
   public var _meta: Meta
 
@@ -152,14 +188,33 @@ public struct AudioContent: Codable, Sendable {
     self.data = data
     self.mimeType = mimeType
   }
+
+  private enum CodingKeys: String, CodingKey {
+    case type, _meta, annotations, data, mimeType
+  }
+
+  public init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    self._meta = try container.decodeIfPresent([String: AnyCodable].self, forKey: ._meta)
+    self.annotations = try container.decodeIfPresent(Annotations.self, forKey: .annotations)
+    self.data = try container.decode(String.self, forKey: .data)
+    self.mimeType = try container.decode(String.self, forKey: .mimeType)
+  }
+
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.container(keyedBy: CodingKeys.self)
+    try container.encode("audio", forKey: .type)
+    try container.encodeIfPresent(_meta, forKey: ._meta)
+    try container.encodeIfPresent(annotations, forKey: .annotations)
+    try container.encode(data, forKey: .data)
+    try container.encode(mimeType, forKey: .mimeType)
+  }
 }
 
 // MARK: - Resource Link
 
 /// A link to a resource.
 public struct ResourceLink: Codable, Sendable {
-  private let type: String = "resource_link"
-
   /// Extensible metadata field.
   public var _meta: Meta
 
@@ -203,14 +258,41 @@ public struct ResourceLink: Codable, Sendable {
     self.title = title
     self.uri = uri
   }
+
+  private enum CodingKeys: String, CodingKey {
+    case type, _meta, annotations, description, mimeType, name, size, title, uri
+  }
+
+  public init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    self._meta = try container.decodeIfPresent([String: AnyCodable].self, forKey: ._meta)
+    self.annotations = try container.decodeIfPresent(Annotations.self, forKey: .annotations)
+    self.description = try container.decodeIfPresent(String.self, forKey: .description)
+    self.mimeType = try container.decodeIfPresent(String.self, forKey: .mimeType)
+    self.name = try container.decodeIfPresent(String.self, forKey: .name)
+    self.size = try container.decodeIfPresent(Int.self, forKey: .size)
+    self.title = try container.decodeIfPresent(String.self, forKey: .title)
+    self.uri = try container.decode(String.self, forKey: .uri)
+  }
+
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.container(keyedBy: CodingKeys.self)
+    try container.encode("resource_link", forKey: .type)
+    try container.encodeIfPresent(_meta, forKey: ._meta)
+    try container.encodeIfPresent(annotations, forKey: .annotations)
+    try container.encodeIfPresent(description, forKey: .description)
+    try container.encodeIfPresent(mimeType, forKey: .mimeType)
+    try container.encodeIfPresent(name, forKey: .name)
+    try container.encodeIfPresent(size, forKey: .size)
+    try container.encodeIfPresent(title, forKey: .title)
+    try container.encode(uri, forKey: .uri)
+  }
 }
 
 // MARK: - Embedded Resource
 
 /// An embedded resource with its contents.
 public struct EmbeddedResource: Codable, Sendable {
-  private let type: String = "resource"
-
   /// Extensible metadata field.
   public var _meta: Meta
 
@@ -228,6 +310,25 @@ public struct EmbeddedResource: Codable, Sendable {
     self._meta = _meta
     self.annotations = annotations
     self.resource = resource
+  }
+
+  private enum CodingKeys: String, CodingKey {
+    case type, _meta, annotations, resource
+  }
+
+  public init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    self._meta = try container.decodeIfPresent([String: AnyCodable].self, forKey: ._meta)
+    self.annotations = try container.decodeIfPresent(Annotations.self, forKey: .annotations)
+    self.resource = try container.decode(EmbeddedResourceResource.self, forKey: .resource)
+  }
+
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.container(keyedBy: CodingKeys.self)
+    try container.encode("resource", forKey: .type)
+    try container.encodeIfPresent(_meta, forKey: ._meta)
+    try container.encodeIfPresent(annotations, forKey: .annotations)
+    try container.encode(resource, forKey: .resource)
   }
 }
 

@@ -11,7 +11,7 @@ public typealias TerminalId = String
 
 /// A reference to an active terminal.
 public struct Terminal: Codable, Sendable {
-  private let type: String = "terminal"
+  private var type: String = "terminal"
 
   /// Extensible metadata field.
   public var _meta: Meta

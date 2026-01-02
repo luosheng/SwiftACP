@@ -16,7 +16,11 @@ let package = Package(
     .library(
       name: "SwiftACP",
       targets: ["SwiftACP"]
-    )
+    ),
+    .executable(
+      name: "ACPClientExample",
+      targets: ["ACPClientExample"]
+    ),
   ],
   dependencies: [
     .package(url: "https://github.com/luosheng/StreamTransport.git", branch: "main")
@@ -28,6 +32,13 @@ let package = Package(
       name: "SwiftACP",
       dependencies: [
         .product(name: "StreamTransportCore", package: "StreamTransport"),
+        .product(name: "StreamTransportClient", package: "StreamTransport"),
+      ]
+    ),
+    .executableTarget(
+      name: "ACPClientExample",
+      dependencies: [
+        "SwiftACP",
         .product(name: "StreamTransportClient", package: "StreamTransport"),
       ]
     ),
